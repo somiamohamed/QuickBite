@@ -9,10 +9,11 @@ class CreateOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'foods' => 'required|array',
-            'foods.*.food_id' => 'required|exists:foods,id',
-            'foods.*.quantity' => 'required|integer|min:1',
-            'delivery_address' => 'required|string',
+            "items" => "required|array",
+            "items.*.food_id" => "required|exists:food,id",
+            "items.*.quantity" => "required|integer|min:1",
+            "items.*.options" => "nullable|array",
+            "items.*.options.*" => "integer|exists:food_options,id",
         ];
     }
 }

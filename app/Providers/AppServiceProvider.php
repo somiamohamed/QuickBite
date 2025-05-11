@@ -13,7 +13,9 @@ use App\Events\OrderCreated;
 use App\Events\OrderStatusUpdated;
 use App\Listeners\SendOrderCreatedNotifications;
 use App\Listeners\UpdateInventory;
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+//use Illuminate\Foundation\Support\Providers\EventServiceProvider as EventServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -27,9 +29,17 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
-    public function boot()
+    public function boot(): void
     {
-        parent::boot();
+        RateLimiter::for("api", function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        $this->routes(function () {
+            Route::middleware("api")
+                ->prefix("api")
+                ->group(base_path("routes/api.php"));
+        });
     }
 }
 

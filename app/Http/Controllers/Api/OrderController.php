@@ -62,4 +62,14 @@ class OrderController extends Controller
 
         return new PaymentResource($payment);
     }
+
+    public function indexForUser(Request $request)
+{
+    $orders = Auth::user()
+    ->orders()
+    ->with(["foods", "restaurant"])
+    ->orderByDesc("created_at")
+    ->paginate(10);
+    return OrderResource::collection($orders);
+}
 }

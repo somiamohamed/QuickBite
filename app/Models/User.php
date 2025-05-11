@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
+    use HasApiTokens, HasFactory, Notifiable;
+
     public function restaurant(): HasOne
     {
         return $this->hasOne(Restaurant::class, 'owner_id');
@@ -20,9 +22,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Restaurant::class);
     }
-
-    use HasApiTokens, HasFactory, Notifiable;
-
  
     const ROLE_CUSTOMER = 'customer';
     const ROLE_RESTAURANT = 'restaurant';
@@ -33,17 +32,29 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'role', 
         'address',
     ];
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
-  
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function recentSearches()
+    {
+        return $this->hasMany(RecentSearch::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 }

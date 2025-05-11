@@ -1,32 +1,35 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\Restaurant;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class RestaurantService
 {
-    public function createRestaurant(array $data, $logoFile)
+    public function getAllRestaurants(Request $request): LengthAwarePaginator
     {
-        $logoPath = $logoFile->store('restaurants/logos', 'public');
-        
-        return Restaurant::create([
-            'name' => $data['name'],
-            'description' => $data['description'],
-            'logo' => $logoPath,
-            'user_id' => auth()->id()
-        ]);
+        $query = Restaurant::query();
+        if ($request->has("cuisine")) {
+            $query->where("cuisine", "like", "%" . $request->input("cuisine") . "%");
+        }
+        return $query->paginate(10);
     }
 
-    public function updateRestaurant(Restaurant $restaurant, array $data)
+    public function findRestaurantById(int $id): Restaurant
     {
-        if (isset($data['logo'])) {
-            Storage::delete($restaurant->logo);
-            $data['logo'] = $data['logo']->store('restaurants/logos', 'public');
-        }
+        return Restaurant::with("foods")->findOrFail($id);
+    }
+    
+    public function searchRestaurants(Request $request): LengthAwarePaginator
+    {
+        $validatedData = $request->validate(["query" => "required|string"]);
+        return Restaurant::where("name", "like", "%{$validatedData["query"]}%")->paginate(10);
+    }
 
-        $restaurant->update($data);
+    public function updateRestaurant(Restaurant $restaurant, array $validatedData): Restaurant
+    {
+        $restaurant->update($validatedData);
         return $restaurant;
     }
 }

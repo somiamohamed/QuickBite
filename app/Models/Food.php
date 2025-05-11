@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Food extends Model
 {
+    public function optionGroups()
+    {
+        return $this->hasMany(OptionGroup::class);
+    }
 
     public function orders(): BelongsToMany
     {

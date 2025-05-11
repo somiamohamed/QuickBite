@@ -20,7 +20,8 @@ class FoodController extends Controller
 
     public function show($restaurantId, $foodId)
     {
-        $food = Food::where('restaurant_id', $restaurantId)
+        $food = Food::where("restaurant_id", $restaurantId)
+                    ->with(["optionGroups.foodOptions"])
                     ->findOrFail($foodId);
                     
         return new FoodResource($food);
@@ -29,18 +30,24 @@ class FoodController extends Controller
     public function store(Request $request, $restaurantId)
     {
         $request->validate([
-            'name' => 'required|string',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image',
+            "name" => "required|string|max:255",
+            "price" => "required|numeric|min:0",
+            "description" => "nullable|string",
+            "image" => "nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            "restaurant_id" => "required|exists:restaurants,id",
         ]);
 
+        $imagePath = null;
+        if ($request->hasFile("image") && $request->file("image")->isValid()) {
+            $imagePath = $request->file("image")->store("foods", "public"); 
+        }
+
         $food = Food::create([
-            'restaurant_id' => $restaurantId,
-            'name' => $request->name,
-            'price' => $request->price,
-            'description' => $request->description,
-            'image' => $request->file('image') ? $request->file('image')->store('foods') : null,
+            "restaurant_id" => $validatedData["restaurant_id"],
+            "name" => $validatedData["name"],
+            "price" => $validatedData["price"],
+            "description" => $validatedData["description"],
+            "image" => $imagePath,
         ]);
 
         return new FoodResource($food);
