@@ -6,14 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CreateOrderRequest extends FormRequest
 {
-    public function rules()
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
     {
         return [
-            "items" => "required|array",
-            "items.*.food_id" => "required|exists:food,id",
-            "items.*.quantity" => "required|integer|min:1",
-            "items.*.options" => "nullable|array",
-            "items.*.options.*" => "integer|exists:food_options,id",
+            'restaurant_id' => 'required|exists:restaurants,id',
+            'items' => 'required|array|min:1',
+            'items.*.food_id' => 'required|exists:food,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.selected_options' => 'nullable|array', 
+            'items.*.selected_options.*' => 'integer|exists:food_options,id',
         ];
     }
 }

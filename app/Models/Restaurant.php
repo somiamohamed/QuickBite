@@ -9,15 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Restaurant extends Model
 {
     use HasFactory;
-
    
     protected $fillable = [
         'name',
-        'description',
-        'logo',
         'address',
-        'delivery_time', 
-        'delivery_fee',  
+        'description',
+        'phone_number',
+        'cuisine_type',
+        'user_id', 
     ];
 
  
@@ -25,7 +24,6 @@ class Restaurant extends Model
     {
         return $this->hasMany(Food::class);
     }
-
  
     public function orders(): HasMany
     {

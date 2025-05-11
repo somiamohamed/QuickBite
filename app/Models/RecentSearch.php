@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class RecentSearch extends Model
 {
     use HasFactory;
-    protected $fillable = ["user_id", "term"];
+    protected $fillable = ['user_id', 'term'];
 
     public function user()
     {

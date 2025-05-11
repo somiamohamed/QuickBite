@@ -9,34 +9,47 @@ use Illuminate\Support\Facades\Auth;
 
 class SearchController extends Controller
 {
-    public function storeRecentSearch(Request $request)
+    // Method to add a search term
+    public function addRecentSearch(Request $request)
     {
-        $validated = $request->validate(["term" => "required|string|max:255"]);
-        
         $user = Auth::user();
-        RecentSearch::firstOrCreate(
-            ["user_id" => $user->id, "term" => $validated["term"]],
-            ["updated_at" => now()]
-        );
-        
-        $user->recentSearches()->orderByDesc("updated_at")->skip(10)->take(PHP_INT_MAX)->delete();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-        return response()->json(["message" => "Search term saved"], 201);
+        $validatedData = $request->validate(['term' => 'required|string|max:255']);
+
+        $user->recentSearches()->orderBy('created_at', 'desc')->skip(9)->delete();
+
+        $search = RecentSearch::create([
+            'user_id' => $user->id,
+            'term' => $validatedData['term'],
+        ]);
+
+        return response()->json(['message' => 'Search term saved', 'search' => $search], 201);
     }
 
+    // Method to get recent searches for the logged-in user
     public function getRecentSearches(Request $request)
     {
-        $recentSearches = Auth::user()
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $recentSearches = $user
         ->recentSearches()
-        ->orderByDesc("updated_at")
-        ->limit(10)
-        ->pluck("term");
+        ->orderByDesc('created_at') 
+        ->limit(10) 
+        ->pluck('term');
+
         return response()->json($recentSearches);
     }
 
     public function getPopularCategories(Request $request)
     {
-        $popular = [{{objects}}];
-        return response()->json($popular);
+        $popularCategories = [{{ordered by popularity}}]; 
+
+        return response()->json($popularCategories);
     }
 }

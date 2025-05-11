@@ -25,6 +25,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () 
 {
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login_attempts');
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [AuthController::class, 'profile']); 
     Route::put('/profile', [AuthController::class, 'updateProfile']); 
@@ -34,6 +35,11 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::get('/orders/{orderId}', [OrderController::class, 'show']);
     Route::get('/my-orders', [OrderController::class, 'indexForUser']); // For user to view their orders
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->can('updateStatus,order');
+
+    Route::post('/search/recent/add', [SearchController::class, 'addRecentSearch']);
+    Route::get('/search/recent', [SearchController::class, 'getRecentSearches']);
+    // public route for popular categories
+    Route::get("/search/popular-categories", [SearchController::class, "getPopularCategories"]);
 });
 
 // Public Restaurant and Food Routes
@@ -51,7 +57,3 @@ Route::middleware(['auth:sanctum', 'can:manage-restaurant,restaurant
     Route::delete('/restaurants/{restaurant}', [RestaurantController::class, 'destroy']); // Uncomment if destroy is implemented
 });
 
-Route::post("/search/recent", [SearchController::class, "storeRecentSearch"]);
-Route::get("/search/recent", [SearchController::class, "getRecentSearches"]);
-// public route for popular categories
-Route::get("/search/popular-categories", [SearchController::class, "getPopularCategories"]);

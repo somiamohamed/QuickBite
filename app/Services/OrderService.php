@@ -9,22 +9,54 @@ use App\Events\OrderStatusUpdated;
 
 class OrderService
 {
-    public function createOrder(array $data, User $user)
+    public function createOrder(User $user, array $data): Order
     {
-        $restaurantId = Food::findOrFail($data['foods'][0]['food_id'])->restaurant_id;
+        return DB::transaction(function () use ($user, $data) {
+            $totalAmount = 0;
+            $orderItemsData = [];
 
-        $order = Order::create([
-            'user_id' => $user->id,
-            'restaurant_id' => $restaurantId,
-            'total_price' => 0,
-            'status' => 'pending',
-            'delivery_address' => $data['delivery_address'],
-        ]);
+            foreach ($data['items'] as $item) {
+                $food = Food::findOrFail($item['food_id']);
+                $itemPrice = $food->price;
+                $selectedOptionIds = $item['selected_options'] ?? [];
+                $optionsPrice = 0;
 
-        $this->addFoodsToOrder($order, $data['foods']);
-        $this->calculateTotalPrice($order);
+                if (!empty($selectedOptionIds)) {
+                    $validOptions = FoodOption::whereIn('id', $selectedOptionIds)->get();
+                    $optionsPrice = $validOptions->sum('price_adjustment');
+                }
 
-        return $order;
+                $itemTotal = ($itemPrice + $optionsPrice) * $item['quantity'];
+                $totalAmount += $itemTotal;
+
+                $orderItemsData[] = [
+                    'food_id' => $food->id,
+                    'quantity' => $item['quantity'],
+                    'price_at_order' => $itemPrice + $optionsPrice, // Price per unit at time of order
+                    'selected_options_payload' => json_encode($validOptions->toArray()) // Store selected options details
+                ];
+            }
+
+            $order = $user->orders()->create([
+                'restaurant_id' => $data['restaurant_id'],
+                'total_amount' => $totalAmount,
+                'status' => 'pending', // Default status
+                'delivery_address' => $data['delivery_address'] ?? null,
+                'delivery_time' => $data['delivery_time'] ?? null,
+            ]);
+
+            // This needs a pivot table `order_food` with columns: order_id, food_id, quantity, price_at_order, selected_options_payload (TEXT/JSON)
+            foreach ($orderItemsData as $orderItem) {
+                $order->foods()->attach($orderItem['food_id'], [
+                    'quantity' => $orderItem['quantity'],
+                    'price_at_order' => $orderItem['price_at_order'],
+                    'selected_options_payload' => $orderItem['selected_options_payload']
+                ]);
+            }
+            
+            $order->load('foods', 'restaurant', 'user');
+            return $order;
+        });
     }
 
     protected function addFoodsToOrder(Order $order, array $foods)

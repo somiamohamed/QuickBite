@@ -21,7 +21,24 @@ class RestaurantController extends Controller
 
     public function index(Request $request)
     {
-        $restaurants = $this->restaurantService->getAllRestaurants($request);
+        $query = Restaurant::query();
+
+        if ($request->has('cuisine')) {
+            $query->where('cuisine', 'like', '%' . $request->input('cuisine') . '%');
+        }
+
+        if ($request->has('min_rating')) {
+            $query->where('rating', '>=', $request->input('min_rating'));
+        }
+
+        if ($request->has('sort_by')) {
+            $sortDir = $request->input('sort_dir', 'asc'); // Default to ascending
+            $query->orderBy($request->input('sort_by'), $sortDir);
+        }
+
+        $perPage = $request->input('per_page', 15); // Default to 15 items per page
+        $restaurants = $query->paginate($perPage);
+
         return RestaurantResource::collection($restaurants);
     }
 

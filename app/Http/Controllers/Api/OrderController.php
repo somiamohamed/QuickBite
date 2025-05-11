@@ -4,33 +4,38 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
+use App\Services\OrderService;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Services\OrderService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use App\Events\OrderCreated;
 use App\Services\PaymentService;
 use App\Notifications\OrderStatusUpdatedNotification;
 use App\Notifications\OrderCreatedNotification;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(
-        protected OrderService $orderService
-    ) {}
+    protected $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
 
     public function store(CreateOrderRequest $request)
     {
-        $order = $this->orderService->createOrder($request->validated());
-
-        $order->user->notify(new OrderCreatedNotification($order));
-        $order->restaurant->owner->notify(new OrderCreatedNotification($order));
-        event(new OrderCreated($order));
-
-        return new OrderResource($order);
+        try {
+            $order = $this->orderService->createOrder($request->user(), $validatedData = $request->validate());
+            return new OrderResource($order);
+        } 
+        catch (\Exception $e) {
+            // Log the exception
+            return response()->json(['message' => 'Failed to create order: ' . $e->getMessage()], 500);
+        }
     }
 
     public function show(Order $order)
@@ -64,12 +69,13 @@ class OrderController extends Controller
     }
 
     public function indexForUser(Request $request)
-{
-    $orders = Auth::user()
-    ->orders()
-    ->with(["foods", "restaurant"])
-    ->orderByDesc("created_at")
-    ->paginate(10);
-    return OrderResource::collection($orders);
-}
+    {
+        $user = Auth::user();
+        $orders = $user->orders()
+            ->with(['restaurant', 'foods']) 
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        return OrderResource::collection($orders);
+    }
 }
