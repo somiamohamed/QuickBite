@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Admin;
-use App\Models\User; 
+use App\Models\User;
 use App\Models\Category;
 use App\Models\Restaurant;
 use App\Models\Food;
@@ -25,10 +25,10 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        Admin::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-        ]);
+//        Admin::factory()->create([
+//            'name' => 'Admin',
+//            'email' => 'admin@example.com',
+//        ]);
 
         // Create categories
         $categories = [
@@ -44,21 +44,20 @@ class DatabaseSeeder extends Seeder
         // Create restaurants and attach categories
         $restaurant = Restaurant::create([
             'name' => 'Pizza Palace',
-            'address' => '123 Main St',
         ]);
         $restaurant->categories()->attach([1, 2]); // Attach Italian and Fast Food
 
         // Create foods and link to category
-        Food::create([
+        $food = Food::create([
             'name' => 'Margherita Pizza',
             'price' => 12.99,
-            'category_id' => 1, // Italian
+            'restaurant_id' => $restaurant->id,
         ]);
 
         Food::create([
             'name' => 'Cheeseburger',
             'price' => 8.99,
-            'category_id' => 2, // Fast Food
+            'restaurant_id' => $restaurant->id,
         ]);
     }
 }

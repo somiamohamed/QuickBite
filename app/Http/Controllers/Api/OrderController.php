@@ -31,7 +31,7 @@ class OrderController extends Controller
         try {
             $order = $this->orderService->createOrder($request->user(), $validatedData = $request->validate());
             return new OrderResource($order);
-        } 
+        }
         catch (\Exception $e) {
             // Log the exception
             return response()->json(['message' => 'Failed to create order: ' . $e->getMessage()], 500);
@@ -44,16 +44,15 @@ class OrderController extends Controller
         return new OrderResource($order);
     }
 
-    use App\Notifications\OrderStatusUpdatedNotification;
 
     public function updateStatus(Request $request, Order $order)
     {
         $order->update(['status' => $request->status]);
-        
+
         $order->user->notify(
             new OrderStatusUpdatedNotification($order, $request->status)
         );
-        
+
         return new OrderResource($order);
     }
 
@@ -72,7 +71,7 @@ class OrderController extends Controller
     {
         $user = Auth::user();
         $orders = $user->orders()
-            ->with(['restaurant', 'foods']) 
+            ->with(['restaurant', 'foods'])
             ->orderByDesc('created_at')
             ->paginate(10);
 

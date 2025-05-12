@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\BannerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,13 +26,13 @@ Route::get('/test', function () {
 
 // Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login_attempts');
+Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function () 
+Route::middleware('auth:sanctum')->group(function ()
 {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/profile', [AuthController::class, 'profile']); 
-    Route::put('/profile', [AuthController::class, 'updateProfile']); 
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
 
     // Order Routes that require authentication
     Route::post('/orders', [OrderController::class, 'store']);
@@ -53,7 +54,7 @@ Route::get('/restaurants/{restaurantId}/foods', [FoodController::class, 'index']
 Route::get('/restaurants/{restaurantId}', [RestaurantController::class, 'show']);
 Route::get('/restaurants/{restaurantId}/foods/{foodId}', [FoodController::class, 'show']);
 Route::get('/restaurants/featured', [RestaurantController::class, 'featured']);
-Route::get('/foods/popular', [FoodController::class, 'popular'])
+Route::get('/foods/popular', [FoodController::class, 'popular']);
 // CRUD operations:
 Route::apiResource('banners', \App\Http\Controllers\Api\BannerController::class);
 Route::get('/banners', [BannerController::class, 'index']);

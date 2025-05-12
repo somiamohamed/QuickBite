@@ -33,8 +33,6 @@ class UserFactory extends Factory
         ];
     }
 
-    User::factory()->withRestaurant()->create();
-
     /**
      * Indicate that the model's email address should be unverified.
      */

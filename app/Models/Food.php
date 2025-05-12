@@ -43,9 +43,4 @@ class Food extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function optionGroups()
-    {
-        return $this->hasMany(OptionGroup::class);
-    }
-
 }

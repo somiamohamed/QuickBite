@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('restaurants', function (Blueprint $table) {
-        $table->boolean('is_featured')->default(false)->after('status'); // Or any other relevant column
+        $table->boolean('is_featured')->default(false)->after('logo'); // Or any other relevant column
         $table->boolean('is_popular')->default(false)->after('is_featured');
     });
     }
