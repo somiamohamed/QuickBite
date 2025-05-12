@@ -14,6 +14,16 @@ return new class extends Migration
             $table->string("term");
             $table->timestamps();
         });
+
+        Schema::create('banners', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('image_url');
+            $table->string('target_url');
+            $table->boolean('is_active')->default(true);
+            $table->integer('sort_order')->default(0);
+            $table->timestamps();
+        });
     }
 
     public function down(): void

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create("food_options", function (Blueprint $table) {
             $table->id();
-            $table->foreignId("option_group_id")->constrained()->onDelete("cascade");
-            $table->string("name"); // e.g., "Small", "Extra Cheese"
-            $table->decimal("price_adjustment", 8, 2)->default(0.00);
+            $table->foreignId('option_group_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->decimal('price_adjustment', 8, 2)->default(0.00);
             $table->timestamps();
         });
 

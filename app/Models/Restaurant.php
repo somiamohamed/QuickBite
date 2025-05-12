@@ -19,7 +19,8 @@ class Restaurant extends Model
         'user_id', 
         'delivery_time' => '30-50',
         'min_order' => '50',
-        
+        'is_featured', 
+        'is_popular',
     ];
 
  
@@ -41,5 +42,10 @@ class Restaurant extends Model
     public function owner()
     {
         return $this->belongsTo(Admin::class, 'owner_id');
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_restaurant');
     }
 }

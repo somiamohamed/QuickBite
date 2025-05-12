@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("option_groups", function (Blueprint $table) {
+        Schema::create('option_groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("food_id")->constrained()->onDelete("cascade");
-            $table->string("name"); // e.g., "Size", "Select Toppings"
-            $table->enum("type", ["radio", "checkbox", "quantity"])->default("radio"); // How to select options
-            $table->boolean("required")->default(false);
+            $table->foreignId('food_id')->constrained()->onDelete('cascade');
+            $table->string('name'); 
+            $table->enum('type', ['radio', 'checkbox', 'quantity'])->default('radio'); // radio (select one), checkbox (select multiple)
+            $table->boolean('is_required')->default(false);
             $table->timestamps();
         });
 

@@ -29,10 +29,23 @@ class Food extends Model
         'price',
         'image',
         'category',
+        'is_popular_item', 
+        'has_offer',
     ];
 
     public function restaurant(): BelongsTo
     {
         return $this->belongsTo(Restaurant::class);
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function optionGroups()
+    {
+        return $this->hasMany(OptionGroup::class);
+    }
+
 }

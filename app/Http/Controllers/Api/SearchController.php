@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RecentSearch;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category; 
 
 class SearchController extends Controller
 {
@@ -48,8 +50,21 @@ class SearchController extends Controller
 
     public function getPopularCategories(Request $request)
     {
-        $popularCategories = [{{ordered by popularity}}]; 
+        $popularCategories = Category::withCount('restaurants')
+            ->orderBy('foods_count', 'desc')
+            ->take($request->input('limit', 5))
+            ->get();
 
-        return response()->json($popularCategories);
+        return response()->json([
+            'success' => true,
+            'data' => $popularCategories,
+        ]);
+
+         if ($popularCategories->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No popular categories found',
+            ], 404);
+        }
     }
 }

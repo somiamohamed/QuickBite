@@ -3,21 +3,22 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Admin; // <-- أضف هذا السطر
-use App\Models\User; // إذا كنت تستخدم User أيضًا
+use App\Models\Admin;
+use App\Models\User; 
+use App\Models\Category;
+use App\Models\Restaurant;
+use App\Models\Food;
 
 class DatabaseSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // إنشاء بيانات تجريبية للمستخدمين
         User::create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
 
-        // إنشاء بيانات تجريبية للمشرفين
         Admin::create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
@@ -27,6 +28,37 @@ class DatabaseSeeder extends Seeder
         Admin::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
+        ]);
+
+        // Create categories
+        $categories = [
+            ['name' => 'Italian', 'slug' => 'italian'],
+            ['name' => 'Fast Food', 'slug' => 'fast-food'],
+            ['name' => 'Desserts', 'slug' => 'desserts'],
+        ];
+
+        foreach ($categories as $category) {
+            Category::create($category);
+        }
+
+        // Create restaurants and attach categories
+        $restaurant = Restaurant::create([
+            'name' => 'Pizza Palace',
+            'address' => '123 Main St',
+        ]);
+        $restaurant->categories()->attach([1, 2]); // Attach Italian and Fast Food
+
+        // Create foods and link to category
+        Food::create([
+            'name' => 'Margherita Pizza',
+            'price' => 12.99,
+            'category_id' => 1, // Italian
+        ]);
+
+        Food::create([
+            'name' => 'Cheeseburger',
+            'price' => 8.99,
+            'category_id' => 2, // Fast Food
         ]);
     }
 }

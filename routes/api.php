@@ -19,19 +19,16 @@ use App\Http\Controllers\Api\SearchController;
 |
 */
 
-dd('API routes file loaded');
-
 Route::get('/test', function () {
     return response()->json(['message' => 'API test route works']);
 });
 
 // Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login_attempts');
 
 Route::middleware('auth:sanctum')->group(function () 
 {
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login_attempts');
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/profile', [AuthController::class, 'profile']); 
     Route::put('/profile', [AuthController::class, 'updateProfile']); 
@@ -55,6 +52,12 @@ Route::get('/restaurants/search', [RestaurantController::class, 'search']); // E
 Route::get('/restaurants/{restaurantId}/foods', [FoodController::class, 'index']);
 Route::get('/restaurants/{restaurantId}', [RestaurantController::class, 'show']);
 Route::get('/restaurants/{restaurantId}/foods/{foodId}', [FoodController::class, 'show']);
+Route::get('/restaurants/featured', [RestaurantController::class, 'featured']);
+Route::get('/foods/popular', [FoodController::class, 'popular'])
+// CRUD operations:
+Route::apiResource('banners', \App\Http\Controllers\Api\BannerController::class);
+Route::get('/banners', [BannerController::class, 'index']);
+Route::get("/foods/search", [FoodController::class, "searchGlobal"]);
 
 
 // Restaurant Management (Protected by policy)

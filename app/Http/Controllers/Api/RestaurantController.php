@@ -39,6 +39,13 @@ class RestaurantController extends Controller
         $perPage = $request->input('per_page', 15); // Default to 15 items per page
         $restaurants = $query->paginate($perPage);
 
+        if ($request->has('is_featured') && $request->boolean('is_featured')) {
+            $query->where('is_featured', true);
+        }
+        if ($request->has('is_popular') && $request->boolean('is_popular')) {
+            $query->where('is_popular', true);
+        }
+
         return RestaurantResource::collection($restaurants);
     }
 
@@ -65,4 +72,15 @@ class RestaurantController extends Controller
         $updatedRestaurant = $this->restaurantService->updateRestaurant($restaurant, $validatedData);
         return new RestaurantResource($updatedRestaurant);
     }
+
+    public function featured(Request $request)
+    {
+        $limit = $request->input('limit', 5);
+        $featuredRestaurants = Restaurant::where('is_featured', true)
+            ->where('status', 'active') // Ensure active restaurants
+            ->take($limit)
+            ->get();
+        return RestaurantResource::collection($featuredRestaurants);
+    }
+
 }
