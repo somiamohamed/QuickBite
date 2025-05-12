@@ -51,11 +51,11 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            // الكود الموجود هنا
+           
         ],
 
         'api' => [
-            EnsureFrontendRequestsAreStateful::class,  // هذا هو middleware الخاص بـ Sanctum
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],

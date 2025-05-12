@@ -19,6 +19,12 @@ use App\Http\Controllers\Api\SearchController;
 |
 */
 
+dd('API routes file loaded');
+
+Route::get('/test', function () {
+    return response()->json(['message' => 'API test route works']);
+});
+
 // Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -34,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders/{orderId}', [OrderController::class, 'show']);
     Route::get('/my-orders', [OrderController::class, 'indexForUser']); // For user to view their orders
+    Route::get('/orders/{id}/track', [OrderController::class, 'track']);
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->can('updateStatus,order');
 
     Route::post('/search/recent/add', [SearchController::class, 'addRecentSearch']);

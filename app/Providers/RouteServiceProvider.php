@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers;
-
+use App\Http\Controllers\Api;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -33,5 +33,13 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('login_attempts', function (Request $request) {
             return Limit::perMinute(5)->by($request->input('email') . '|' . $request->ip());
         });
+    }
+
+    protected function mapApiRoutes()
+    {
+        Route::prefix('api')
+         ->middleware('api')
+         ->namespace($this->'App\Http\Controllers')
+         ->group(base_path('routes/api.php'));
     }
 }

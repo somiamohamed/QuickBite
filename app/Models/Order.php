@@ -39,7 +39,7 @@ class Order extends Model
     public function foods(): BelongsToMany
     {
         return $this->belongsToMany(Food::class, 'order_food')
-            ->withPivot('quantity', 'price'); // علشان نستحدم الحقول الإضافية في الـ Pivot
+            ->withPivot('quantity', 'price');
     }
     
 }

@@ -17,6 +17,9 @@ class Restaurant extends Model
         'phone_number',
         'cuisine_type',
         'user_id', 
+        'delivery_time' => '30-50',
+        'min_order' => '50',
+        
     ];
 
  

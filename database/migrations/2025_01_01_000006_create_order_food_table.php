@@ -9,15 +9,19 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('order_food', function (Blueprint $table) {
-        $table->foreignId('order_id')->constrained();
-        $table->foreignId('food_id')->constrained();
-        $table->integer('quantity');
-        $table->decimal('price', 8, 2);
-        $table->primary(['order_id', 'food_id']);
-        });
+        if (!Schema::hasTable('order_food')) {
+            Schema::create('order_food', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('order_id')->constrained()->onDelete('cascade');
+                $table->foreignId('food_id')->constrained()->onDelete('cascade');
+                $table->integer('quantity');
+                $table->decimal('price', 8, 2);
+                $table->json('selected_options_payload')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
