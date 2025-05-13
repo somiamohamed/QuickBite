@@ -54,7 +54,7 @@ class FoodController extends Controller
 
         $food = $this->foodService->createFood((int)$restaurantId, $validatedData);
         $foodData = collect($validatedData)->except(['option_groups', 'image'])->toArray();
-        $foodData['restaurant_id'] = $restaurant->id;
+        $foodData['restaurant_id'] = $restaurantId;
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $foodData['image_url'] = $request->file('image')->store('foods', 'public');

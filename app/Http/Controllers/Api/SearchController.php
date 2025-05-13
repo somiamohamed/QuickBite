@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\RecentSearch;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\CategoryResource;
 use App\Models\Category; 
+use Illuminate\Support\Facades\Auth;
+
 
 class SearchController extends Controller
 {
     // Method to add a search term
     public function addRecentSearch(Request $request)
     {
+        
         $user = Auth::user();
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
@@ -39,8 +40,7 @@ class SearchController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $recentSearches = $user
-        ->recentSearches()
+        $recentSearches = $user->recentSearches()
         ->orderByDesc('created_at') 
         ->limit(10) 
         ->pluck('term');

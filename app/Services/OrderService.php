@@ -6,6 +6,8 @@ use App\Models\Order;
 use App\Models\Food;
 use App\Models\User;
 use App\Events\OrderStatusUpdated;
+use App\Models\FoodOption;
+use Illuminate\Support\Facades\DB;
 
 class OrderService
 {

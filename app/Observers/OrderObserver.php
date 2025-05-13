@@ -28,7 +28,6 @@ class OrderObserver
 
     public function deleting(Order $order)
     {
-        // حذف العناصر المرتبطة قبل حذف الطلب
         $order->foods()->detach();
     }
 }

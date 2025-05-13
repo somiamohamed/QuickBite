@@ -10,6 +10,7 @@ use App\Services\OrderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+
 class OrderServiceTest extends TestCase
 {
     use RefreshDatabase;
@@ -33,10 +34,8 @@ class OrderServiceTest extends TestCase
 
         $order = $this->service->createOrder([
             'restaurant_id' => $restaurant->id,
-            'items' => [
-                ['food_id' => $food->id, 'quantity' => 3]
-            ]
-        ], $user);
+            'items' => [['food_id' => $food->id, 'quantity' => 3]]
+            ], $user);
 
         $this->assertEquals(150, $order->total);
     }

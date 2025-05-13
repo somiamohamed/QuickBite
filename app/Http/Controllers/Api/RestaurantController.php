@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class RestaurantController extends Controller
 {
+    use AuthorizesRequests;
     protected $restaurantService;
 
     public function __construct(RestaurantService $restaurantService)

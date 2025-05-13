@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Food;
 use App\Models\Restaurant;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class FoodPolicy
 {

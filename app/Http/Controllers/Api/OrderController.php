@@ -9,10 +9,8 @@ use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use App\Events\OrderCreated;
 use App\Services\PaymentService;
 use App\Notifications\OrderStatusUpdatedNotification;
-use App\Notifications\OrderCreatedNotification;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -59,12 +57,10 @@ class OrderController extends Controller
     public function payOrder(Request $request, Order $order, PaymentService $paymentService)
     {
         $payment = $paymentService->processPayment(
-            $order,
-            auth()->user(),
-            $request->only(['method', 'card_token'])
+            $order, auth()->user(), $request->only(['method', 'card_token'])
         );
 
-        return new PaymentResource($payment);
+        return new OrderResource($payment);
     }
 
     public function indexForUser(Request $request)

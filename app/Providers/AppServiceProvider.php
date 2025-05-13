@@ -15,6 +15,8 @@ use App\Listeners\SendOrderCreatedNotifications;
 use App\Listeners\UpdateInventory;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 //use Illuminate\Foundation\Support\Providers\EventServiceProvider as EventServiceProvider;
 
 class EventServiceProvider extends ServiceProvider

@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Food;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class FoodObserver
 {
